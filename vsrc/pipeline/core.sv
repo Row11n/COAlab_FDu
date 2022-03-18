@@ -3,13 +3,19 @@
 `ifdef VERILATOR
 `include "include/common.sv"
 `include "pipeline/regfile/regfile.sv"
+`include "pipeline/decode/decode.sv"
+`include "pipeline/fetch/fetch.sv"
+`include "pipeline/fetch/pcselect.sv"
+
 
 `else
 
 `endif
 
 module core 
-	import common::*;(
+	import common::*;
+	import pipes::*;
+(
 	input logic clk, reset,
 	output ibus_req_t  ireq,
 	input  ibus_resp_t iresp,
@@ -17,17 +23,67 @@ module core
 	input  dbus_resp_t dresp
 );
 	/* TODO: Add your pipeline here. */
+	u64 pc, pc_nxt;
+	always_ff @( posedge clk )
+	begin
+		if(reset)
+		begin
+			pc <= 64'h8000_0000;
+		end
+		else
+		begin
+			pc <= pc_nxt;
+		end
+	end
 
+	assign ireq.addr = pc; 
+
+	u32 raw_instr;
+	assign raw_instr = iresp.data;
+
+	fetch_data_t dataF;
+	decode_data_t dataD;
+	execute_data_t dataE;
+	memory_data_t dataM;
+	creg_addr_t ra1, ra2;
+    word_t rd1, rd2;
+
+	pcselect pcselect
+	(
+		.pcplus4(pc + 4),
+		.pc_selected(pc_nxt)
+	);
+
+	fetch fetch
+	(
+		.dataF(dataF),
+		.raw_instr(raw_instr),
+		.pc(pc)
+	);
+
+	decode decode
+	(
+		.dataF(dataF),
+		.dataD(dataD),
+		.ra1(ra1),
+		.ra2(ra2),
+		.rd1(rd1),
+		.rd2(rd2),
+		.pc(pc)
+	);
+
+	word_t result;
+	assign result = rd1 + {{52{raw_instr[31]}}, raw_instr[31:20]};
 
 	regfile regfile(
 		.clk, .reset,
-		.ra1(),
-		.ra2(),
-		.rd1(),
-		.rd2(),
-		.wvalid(),
-		.wa(),
-		.wd()
+		.ra1(ra1),
+		.ra2(ra2),
+		.rd1(rd1),
+		.rd2(rd2),
+		.wvalid(dataD.ctl.regwrite),
+		.wa(dataD.dst),
+		.wd(result)
 	);
 
 `ifdef VERILATOR
@@ -35,15 +91,15 @@ module core
 		.clock              (clk),
 		.coreid             (0),
 		.index              (0),
-		.valid              (0),
-		.pc                 (0),
+		.valid              (~reset),
+		.pc                 (pc),
 		.instr              (0),
 		.skip               (0),
 		.isRVC              (0),
 		.scFailed           (0),
-		.wen                (0),
-		.wdest              (0),
-		.wdata              (0)
+		.wen                (dataD.ctl.regwrite),
+		.wdest              ({3'b0,dataD.dst}),
+		.wdata              (result)
 	);
 	      
 	DifftestArchIntRegState DifftestArchIntRegState (
