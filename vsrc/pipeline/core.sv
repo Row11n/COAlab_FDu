@@ -2,10 +2,18 @@
 `define __CORE_SV
 `ifdef VERILATOR
 `include "include/common.sv"
+`include "include/pipes.sv"
 `include "pipeline/regfile/regfile.sv"
 `include "pipeline/decode/decode.sv"
+`include "pipeline/decode/decode_reg.sv"
 `include "pipeline/fetch/fetch.sv"
-`include "pipeline/fetch/pcselect.sv"
+`include "pipeline/fetch/fetch_reg.sv"
+`include "pipeline/fetch/pc_reg.sv"
+`include "pipeline/memory/memory.sv"
+`include "pipeline/memory/memory_reg.sv"
+`include "pipeline/execute/execute.sv"
+`include "pipeline/execute/execute_reg.sv"
+`include "pipeline/writeback/writeback.sv"
 
 
 `else
@@ -24,35 +32,31 @@ module core
 );
 	/* TODO: Add your pipeline here. */
 	u64 pc, pc_nxt;
-	always_ff @( posedge clk )
-	begin
-		if(reset)
-		begin
-			pc <= 64'h8000_0000;
-		end
-		else
-		begin
-			pc <= pc_nxt;
-		end
-	end
 
-	assign ireq.addr = pc; 
+	pc_reg pc_reg
+	(
+		.clk(clk),
+		.reset(reset),
+		.pc(pc)
+	);
 
 	u32 raw_instr;
 	assign raw_instr = iresp.data;
+	assign ireq.addr = pc;
 
 	fetch_data_t dataF;
+	fetch_data_t dataF_nxt;
 	decode_data_t dataD;
+	decode_data_t dataD_nxt;
 	execute_data_t dataE;
+	execute_data_t dataE_nxt;
 	memory_data_t dataM;
+	memory_data_t dataM_nxt;
 	creg_addr_t ra1, ra2;
     word_t rd1, rd2;
-
-	pcselect pcselect
-	(
-		.pcplus4(pc + 4),
-		.pc_selected(pc_nxt)
-	);
+	u1 regwrite;
+	creg_addr_t wa;
+	word_t result;
 
 	fetch fetch
 	(
@@ -61,19 +65,67 @@ module core
 		.pc(pc)
 	);
 
+	fetch_reg fetch_reg
+	(
+		.clk(clk),
+		.reset(reset),
+		.dataF(dataF),
+		.dataF_nxt(dataF_nxt)
+	);
+
 	decode decode
 	(
-		.dataF(dataF),
+		.dataF(dataF_nxt),
 		.dataD(dataD),
 		.ra1(ra1),
 		.ra2(ra2),
 		.rd1(rd1),
-		.rd2(rd2),
-		.pc(pc)
+		.rd2(rd2)
 	);
 
-	word_t result;
-	assign result = rd1 + {{52{raw_instr[31]}}, raw_instr[31:20]};
+	decode_reg decode_reg
+	(
+		.clk(clk),
+		.reset(reset),
+		.dataD(dataD),
+		.dataD_nxt(dataD_nxt)
+	);
+
+	execute execute
+	(
+		.dataD(dataD_nxt),
+		.dataE(dataE)
+	);
+
+	execute_reg execute_reg
+	(
+		.clk(clk),
+		.reset(reset),
+		.dataE(dataE),
+		.dataE_nxt(dataE_nxt)
+	);
+
+	memory memory
+	(
+		.dataE(dataE_nxt),
+		.dataM(dataM)
+	);
+
+	memory_reg memory_reg
+	(
+		.clk(clk),
+		.reset(reset),
+		.dataM(dataM),
+		.dataM_nxt(dataM_nxt)
+	);
+
+	writeback writeback
+	(
+		.dataM(dataM_nxt),
+		.regwrite(regwrite),
+		.wa(wa),
+		.result(result)
+	);
 
 	regfile regfile(
 		.clk, .reset,
@@ -81,8 +133,8 @@ module core
 		.ra2(ra2),
 		.rd1(rd1),
 		.rd2(rd2),
-		.wvalid(dataD.ctl.regwrite),
-		.wa(dataD.dst),
+		.wvalid(regwrite),
+		.wa(wa),
 		.wd(result)
 	);
 
@@ -92,13 +144,13 @@ module core
 		.coreid             (0),
 		.index              (0),
 		.valid              (~reset),
-		.pc                 (pc),
+		.pc                 (pc - 16),
 		.instr              (0),
 		.skip               (0),
 		.isRVC              (0),
 		.scFailed           (0),
-		.wen                (dataD.ctl.regwrite),
-		.wdest              ({3'b0,dataD.dst}),
+		.wen                (regwrite),
+		.wdest              ({3'b0,wa}),
 		.wdata              (result)
 	);
 	      

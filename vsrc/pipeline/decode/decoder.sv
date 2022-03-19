@@ -12,7 +12,9 @@ module decoder
     import pipes::*;
 (
     input u32 raw_instr,
-    output control_t ctl
+    output control_t ctl,
+    output creg_addr_t ra1, ra2,
+    output u1 is_im
 );
 
     logic [6:0] f7 = raw_instr[6:0];
@@ -29,16 +31,20 @@ module decoder
                 ctl.op = ADDI;
                 ctl.regwrite = 1'b1;
                 ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                is_im = 1'b1;
             end
             default:
             begin
-
+            ctl.op = UNKNOWN;
+            is_im = 1'b0;
             end
             endcase
         end
         default:
         begin
         ctl.op = UNKNOWN;
+        is_im = 1'b0;
         end
         endcase
     end

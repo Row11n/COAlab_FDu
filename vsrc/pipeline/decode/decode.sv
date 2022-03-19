@@ -15,21 +15,30 @@ module decode
     input fetch_data_t dataF,
     output decode_data_t dataD,
     output creg_addr_t ra1, ra2,
-    input word_t rd1, rd2,
-    u64 pc
+    input word_t rd1, rd2
 );
     control_t ctl;
+    u1 is_im;
     decoder decoder
     (
         .raw_instr(dataF.raw_instr),
-        .ctl(ctl)
+        .ctl(ctl),
+        .ra1(ra1),
+        .ra2(ra2),
+        .is_im(is_im)
     );
 
     assign dataD.ctl = ctl;
     assign dataD.dst = dataF.raw_instr[11:7];
     assign dataD.srca = rd1;
-    assign dataD.srcb = rd2;
-    assign dataD.pc = pc;
+    always_comb
+    begin
+        if(is_im)
+            dataD.srcb = {{52{dataF.raw_instr[31]}}, dataF.raw_instr[31:20]};
+        else
+            dataD.srcb = rd2;
+    end
+    assign dataD.pc = dataF.pc;
 
 endmodule
 `endif 

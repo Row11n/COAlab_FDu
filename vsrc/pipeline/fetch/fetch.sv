@@ -19,7 +19,6 @@ import pipes::*;
     assign dataF.raw_instr = raw_instr;
     assign dataF.pc = pc;
 
-
 endmodule
 `endif
 

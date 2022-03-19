@@ -42,10 +42,16 @@ typedef struct packed {
 
 typedef struct packed {
 	u64 pc;
+	control_t ctl;
+	word_t result_alu;
+	creg_addr_t wa;
 } execute_data_t;
 
 typedef struct packed {
 	u64 pc;
+	control_t ctl;
+	word_t result;
+	creg_addr_t wa;
 } memory_data_t;
 
 endpackage
