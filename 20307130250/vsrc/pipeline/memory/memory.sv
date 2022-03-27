@@ -12,18 +12,13 @@ module memory
     import pipes::*;
 (
     input execute_data_t dataE,
-    output memory_data_t dataM,
-    output forward_data_t forward
+    output memory_data_t dataM
 );
     
     assign dataM.pc = dataE.pc;
     assign dataM.ctl = dataE.ctl;
     assign dataM.result = dataE.result_alu; //temporary
     assign dataM.wa = dataE.wa;
-
-    assign forward.waM = dataM.wa;
-    assign forward.resultM =  dataM.result;
-    assign forward.regwriteM = dataM.ctl.regwrite;
 
 
 

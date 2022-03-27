@@ -52,7 +52,6 @@ module core
 	execute_data_t dataE_nxt;
 	memory_data_t dataM;
 	memory_data_t dataM_nxt;
-	forward_data_t forward;
 	creg_addr_t ra1, ra2;
     word_t rd1, rd2;
 	u1 regwrite;
@@ -81,8 +80,7 @@ module core
 		.ra1(ra1),
 		.ra2(ra2),
 		.rd1(rd1),
-		.rd2(rd2),
-		.forward(forward)
+		.rd2(rd2)
 	);
 
 	decode_reg decode_reg
@@ -96,8 +94,7 @@ module core
 	execute execute
 	(
 		.dataD(dataD_nxt),
-		.dataE(dataE),
-		.forward(forward)
+		.dataE(dataE)
 	);
 
 	execute_reg execute_reg
@@ -111,8 +108,7 @@ module core
 	memory memory
 	(
 		.dataE(dataE_nxt),
-		.dataM(dataM),
-		.forward(forward)
+		.dataM(dataM)
 	);
 
 	memory_reg memory_reg

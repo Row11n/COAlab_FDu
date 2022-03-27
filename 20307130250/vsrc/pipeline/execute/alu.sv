@@ -15,15 +15,12 @@ module alu
 	input alufunc_t alufunc,
 	output u64 c
 );
-	always_comb 
-	begin
+	always_comb begin
 		c = '0;
 		unique case(alufunc)
 			ALU_ADD: c = a + b;
-			ALU_OR: c = a | b;
-			ALU_SUB: c = a - b;
-			default: 
-			begin
+			default: begin
+				
 			end
 		endcase
 	end

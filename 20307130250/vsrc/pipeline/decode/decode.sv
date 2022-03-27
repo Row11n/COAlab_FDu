@@ -5,8 +5,6 @@
 `include "include/common.sv"
 `include "include/pipes.sv"
 `include "pipeline/decode/decoder.sv"
-`include "pipeline/decode/extender.sv"
-
 `else
 `endif 
 
@@ -17,41 +15,29 @@ module decode
     input fetch_data_t dataF,
     output decode_data_t dataD,
     output creg_addr_t ra1, ra2,
-    input word_t rd1, rd2,
-    input forward_data_t forward
+    input word_t rd1, rd2
 );
     control_t ctl;
+    u1 is_im;
     decoder decoder
     (
         .raw_instr(dataF.raw_instr),
         .ctl(ctl),
         .ra1(ra1),
-        .ra2(ra2)
+        .ra2(ra2),
+        .is_im(is_im)
     );
 
     assign dataD.ctl = ctl;
     assign dataD.dst = dataF.raw_instr[11:7];
-
+    assign dataD.srca = rd1;
     always_comb
     begin
-        if(ra1 != '0 && ra1 == forward.waE && forward.regwriteE == 1'b1)
-            dataD.srca = forward.resultE;
-        else if(ra1 != '0 && ra1 == forward.waM && forward.regwriteM == 1'b1)
-            dataD.srca = forward.resultM;
+        if(is_im)
+            dataD.srcb = {{52{dataF.raw_instr[31]}}, dataF.raw_instr[31:20]};
         else
-            dataD.srca = rd1;
+            dataD.srcb = rd2;
     end
-
-    extender extender
-    (
-        .raw_instr(dataF.raw_instr),
-        .ctl(ctl),
-        .pc(dataF.pc),
-        .rd2(rd2),
-        .srcb(dataD.srcb),
-        .forward(forward),
-        .ra2(ra2)
-    );
     assign dataD.pc = dataF.pc;
 
 endmodule

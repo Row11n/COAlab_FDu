@@ -13,8 +13,7 @@ module decoder
 (
     input u32 raw_instr,
     output control_t ctl,
-    output creg_addr_t ra1, ra2,
-    output u1 is_im
+    output creg_addr_t ra1, ra2
 );
 
     logic [6:0] f7 = raw_instr[6:0];
@@ -23,6 +22,7 @@ module decoder
     always_comb
     begin
         unique case(f7)
+
         F7_ADDI:
         begin
             unique case(f3)
@@ -32,19 +32,62 @@ module decoder
                 ctl.regwrite = 1'b1;
                 ctl.alufunc = ALU_ADD;
                 ra1 = raw_instr[19:15];
-                is_im = 1'b1;
             end
             default:
             begin
             ctl.op = UNKNOWN;
-            is_im = 1'b0;
             end
             endcase
         end
+
+        F7_LUI:
+        begin
+            ctl.op = LUI;
+            ctl.regwrite = 1'b1;
+            ctl.alufunc = ALU_ADD;
+            ra1 = 5'b00000;
+        end
+
+        F7_AUIPC:
+        begin
+            ctl.op = AUIPC;
+            ctl.regwrite = 1'b1;
+            ctl.alufunc = ALU_ADD;
+            ra1 = 5'b00000;
+        end
+
+        F7_OR_SUB:
+        begin
+            unique case(f3)
+
+            F3_OR:
+            begin
+                ctl.op = OR;
+                ctl.regwrite = 1'b1;
+                ctl.alufunc = ALU_OR;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_SUB:
+            begin
+                ctl.op = SUB;
+                ctl.regwrite = 1'b1;
+                ctl.alufunc = ALU_SUB;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            default:
+            begin
+            ctl.op = UNKNOWN;
+            end
+            endcase
+        end
+
         default:
         begin
         ctl.op = UNKNOWN;
-        is_im = 1'b0;
         end
         endcase
     end
