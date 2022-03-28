@@ -112,6 +112,8 @@ module core
 	(
 		.dataE(dataE_nxt),
 		.dataM(dataM),
+		.dreq(dreq),
+		.dresp(dresp),
 		.forward(forward)
 	);
 
@@ -128,7 +130,8 @@ module core
 		.dataM(dataM_nxt),
 		.regwrite(regwrite),
 		.wa(wa),
-		.result(result)
+		.result(result),
+		.forward(forward)
 	);
 
 	regfile regfile(

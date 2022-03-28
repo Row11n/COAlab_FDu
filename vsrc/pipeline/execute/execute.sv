@@ -29,6 +29,7 @@ module execute
     assign dataE.pc = dataD.pc;
     assign dataE.ctl = dataD.ctl;
     assign dataE.result_alu = result_alu;
+    assign dataE.wd = dataD.wd;
     assign dataE.wa = dataD.dst;
     
     assign forward.waE = dataE.wa;

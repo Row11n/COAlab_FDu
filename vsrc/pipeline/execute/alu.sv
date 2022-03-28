@@ -22,6 +22,9 @@ module alu
 			ALU_ADD: c = a + b;
 			ALU_OR: c = a | b;
 			ALU_SUB: c = a - b;
+			ALU_XOR: c = a ^ b;
+			ALU_AND: c = a & b;
+			ALU_FUCKING: c = a;
 			default: 
 			begin
 			end

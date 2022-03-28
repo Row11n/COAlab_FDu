@@ -29,7 +29,7 @@ module extender
         begin
         end
 
-        ADDI:
+        ADDI, XORI:
         begin
             srcb = {{52{raw_instr[31]}}, raw_instr[31:20]};
         end
@@ -44,26 +44,27 @@ module extender
             srcb = pc + {{32{raw_instr[31]}}, raw_instr[31:12], 12'b0};
         end
 
-        OR:
+        OR, SUB, AND, XOR, ADD:
         begin
             if(ra2 != '0 && ra2 == forward.waE && forward.regwriteE == 1'b1)
                 srcb = forward.resultE;
             else if(ra2 != '0 && ra2 == forward.waM && forward.regwriteM == 1'b1)
                 srcb = forward.resultM;
+            else if(ra2 != '0 && ra2 == forward.waW && forward.regwriteW == 1'b1)
+                srcb = forward.resultW;
             else
                 srcb = rd2;
         end
 
-        SUB:
+        SD:
         begin
-            if(ra2 != '0 && ra2 == forward.waE && forward.regwriteE == 1'b1)
-                srcb = forward.resultE;
-            else if(ra2 != '0 && ra2 == forward.waM && forward.regwriteM == 1'b1)
-                srcb = forward.resultM;
-            else
-                srcb = rd2;
+            srcb = {{52{raw_instr[31]}}, raw_instr[31:25], raw_instr[11:7]};
         end
 
+        LD:
+        begin
+            srcb = {{52{raw_instr[31]}}, raw_instr[31:20]};
+        end
 
         endcase
     end

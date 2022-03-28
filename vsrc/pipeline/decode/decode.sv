@@ -31,6 +31,7 @@ module decode
 
     assign dataD.ctl = ctl;
     assign dataD.dst = dataF.raw_instr[11:7];
+    assign dataD.wd = rd2;
 
     always_comb
     begin
@@ -38,6 +39,8 @@ module decode
             dataD.srca = forward.resultE;
         else if(ra1 != '0 && ra1 == forward.waM && forward.regwriteM == 1'b1)
             dataD.srca = forward.resultM;
+        else if(ra1 != '0 && ra1 == forward.waW && forward.regwriteW == 1'b1)
+            dataD.srca = forward.resultW;
         else
             dataD.srca = rd1;
     end
