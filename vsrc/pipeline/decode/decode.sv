@@ -6,7 +6,7 @@
 `include "include/pipes.sv"
 `include "pipeline/decode/decoder.sv"
 `include "pipeline/decode/extender.sv"
-
+`include "pipeline/decode/pc_alu.sv"
 `else
 `endif 
 
@@ -19,7 +19,9 @@ module decode
     output creg_addr_t ra1, ra2,
     input word_t rd1, rd2,
     input forward_data_t forward,
-    output u1 stall
+    output u1 stall,
+    output u1 jump,
+    output u64 pcsrc
 );
     control_t ctl;
     decoder decoder
@@ -32,7 +34,19 @@ module decode
 
     assign dataD.ctl = ctl;
     assign dataD.dst = dataF.raw_instr[11:7];
-    assign dataD.wd = rd2;
+
+    //wd's forward-test
+    always_comb
+    begin
+        if(ra2 != '0 && ra2 == forward.waE && forward.regwriteE == 1'b1)
+            dataD.wd = forward.resultE;
+        else if(ra2 != '0 && ra2 == forward.waM && forward.regwriteM == 1'b1)
+            dataD.wd = forward.resultM;
+        else if(ra2 != '0 && ra2 == forward.waW && forward.regwriteW == 1'b1)
+            dataD.wd = forward.resultW;
+        else
+            dataD.wd = rd2;
+    end
 
     //scra
     always_comb
@@ -67,6 +81,51 @@ module decode
             stall = 1'b1;
         else
             stall = 1'b0;
+    end
+
+    //pcsrc_compute
+    pc_alu pc_alu
+    (
+        .pc(dataF.pc),
+        .raw_instr(dataF.raw_instr),
+        .pcsrc(pcsrc),
+        .ctl(ctl),
+        .reg_data(dataD.srca)
+    );
+
+    //ifjump
+    always_comb
+    begin
+        if(ctl.branch)
+        begin
+            unique case(ctl.op)
+            
+            default:
+            begin
+                
+            end
+
+            BEQ:
+            begin
+                if(dataD.srca == dataD.srcb)
+                begin
+                    jump = 1'b1;
+                end
+                else
+                    jump = 1'b0;
+            end
+
+            JAL, JALR:
+            begin
+                jump = 1'b1;
+            end
+
+            endcase
+        end
+        else
+        begin
+            jump = 1'b0;
+        end
     end
 
 

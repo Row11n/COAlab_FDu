@@ -8,9 +8,11 @@ package pipes;
 /* Define instrucion decoding rules here */
 
 // parameter F7_RI = 7'bxxxxxxx;
-parameter F7_ADDI_XORI = 7'b0010011;
+parameter F7_ADDI_XORI_ANDI_ORI = 7'b0010011;
 parameter F3_ADDI = 3'b000;
 parameter F3_XORI = 3'b100;
+parameter F3_ANDI = 3'b111;
+parameter F3_ORI = 3'b110;
 
 parameter F7_LUI = 7'b0110111;
 parameter F7_AUIPC = 7'b0010111;
@@ -33,7 +35,12 @@ parameter F7_NOP = 7'b0000000;
 parameter F3_NOP = 3'b000;
 parameter FL7_NOP = 7'b0000000;
 
+parameter F7_BEQ = 7'b1100011;
+parameter F3_BEQ = 3'b000;
 
+parameter F7_JAL = 7'b1101111;
+parameter F7_JALR = 7'b1100111;
+parameter F3_JALR = 3'b000;
 
 
 /* Define pipeline structures here */
@@ -44,11 +51,13 @@ typedef struct packed {
 } fetch_data_t;
  
 typedef enum logic [5:0] {
-	UNKNOWN, ADDI, LUI, AUIPC, OR, SUB, XORI, AND, XOR, ADD, SD, LD, NOP
+	UNKNOWN, ADDI, LUI, AUIPC, OR, SUB, XORI, AND, XOR, ADD,
+	SD, LD, NOP, BEQ, ANDI, ORI, JAL, JALR
 } decoded_op_t;
 
 typedef enum logic [4:0] {
-	ALU_ADD, ALU_OR, ALU_SUB, ALU_XOR, ALU_AND, ALU_FUCKING
+	ALU_ADD, ALU_OR, ALU_SUB, ALU_XOR, ALU_AND, ALU_FUCKING,
+	ALU_SUCKING
 } alufunc_t;
 
 typedef struct packed {
@@ -58,6 +67,7 @@ typedef struct packed {
 	u1 memwrite;
 	u1 memread;
 	u1 nop_signal;
+	u1 branch;
 } control_t;
 
 typedef struct packed {
@@ -82,6 +92,7 @@ typedef struct packed {
 	word_t result_alu;
 	word_t wd;
 	creg_addr_t wa;
+	u1 addr_31;
 } memory_data_t;
 
 typedef struct packed {

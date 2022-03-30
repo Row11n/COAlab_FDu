@@ -26,6 +26,7 @@ module decoder
     ctl.memread = 1'b0;
     ctl.regwrite = 1'b0;
     ctl.nop_signal = 1'b0;
+    ctl.branch = 1'b0;
         unique case(f7)
 
         F7_NOP:
@@ -55,7 +56,7 @@ module decoder
             endcase
         end
 
-        F7_ADDI_XORI:
+        F7_ADDI_XORI_ANDI_ORI:
         begin
             unique case(f3)
 
@@ -76,6 +77,26 @@ module decoder
                 ctl.memread = 1'b0;
                 ctl.regwrite = 1'b1;
                 ctl.alufunc = ALU_XOR;
+                ra1 = raw_instr[19:15];
+            end
+
+            F3_ANDI:
+            begin
+                ctl.op = ANDI;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b0;
+                ctl.regwrite = 1'b1;
+                ctl.alufunc = ALU_AND;
+                ra1 = raw_instr[19:15];
+            end
+
+            F3_ORI:
+            begin
+                ctl.op = ORI;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b0;
+                ctl.regwrite = 1'b1;
+                ctl.alufunc = ALU_OR;
                 ra1 = raw_instr[19:15];
             end
 
@@ -226,6 +247,62 @@ module decoder
 
                 endcase
             end
+
+        F7_BEQ:
+        begin
+            unique case(f3)
+
+            default:
+            begin
+                
+            end
+
+            F3_BEQ:
+            begin
+                ctl.op = BEQ;
+                ctl.regwrite = 1'b0;
+                ctl.memwrite = 1'b0;
+                ctl.branch = 1'b1;
+                ctl.memread = 1'b0;
+                ctl.alufunc = ALU_FUCKING;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            endcase
+        end
+
+        F7_JAL:
+        begin
+            ctl.op = JAL;
+            ctl.regwrite = 1'b1;
+            ctl.memwrite = 1'b0;
+            ctl.branch = 1'b1;
+            ctl.memread = 1'b0;
+            ctl.alufunc = ALU_SUCKING;
+        end
+
+        F7_JALR:
+        begin
+            unique case(f3)
+
+            default:
+            begin
+                
+            end
+
+            F3_JALR:
+            begin
+                ctl.op = JALR;
+                ctl.regwrite = 1'b1;
+                ctl.memwrite = 1'b0;
+                ctl.branch = 1'b1;
+                ctl.memread = 1'b0;
+                ctl.alufunc = ALU_SUCKING;
+                ra1 = raw_instr[19:15];
+            end
+            endcase
+        end
 
         default:
         begin

@@ -39,12 +39,14 @@ module memory
         end
     end
     
+    assign dataM.addr_31 = dreq.addr[31];
     assign dreq.addr = dataE.result_alu;
     assign dataM.pc = dataE.pc;
     assign dataM.ctl = dataE.ctl;
-    assign dataM.result_alu = dataE.result_alu; //temporary
+    assign dataM.result_alu = dataE.result_alu;
 
     assign dataM.wa = dataE.wa;
+
     assign forward.waM = dataM.wa;
     assign forward.regwriteM = dataM.ctl.regwrite;
 

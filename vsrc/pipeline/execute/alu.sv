@@ -25,6 +25,7 @@ module alu
 			ALU_XOR: c = a ^ b;
 			ALU_AND: c = a & b;
 			ALU_FUCKING: c = a;
+			ALU_SUCKING: c = b;
 			default: 
 			begin
 			end

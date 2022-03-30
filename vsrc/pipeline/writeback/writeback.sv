@@ -17,7 +17,8 @@ module writeback
     output word_t result,
     output forward_data_t forward,
     output u64 pc_result,
-    output u1 pc_valid
+    output u1 pc_valid,
+    output u1 skip
 );
 
     assign regwrite = dataM.ctl.regwrite;
@@ -29,10 +30,15 @@ module writeback
         if(dataM.ctl.memwrite == 1'b1 || dataM.ctl.memread == 1'b1) 
         begin
             result = dataM.wd;
+            if(dataM.addr_31 == 1'b0)
+                skip = 1'b1;
+            else
+                skip = 1'b0;
         end
         else
         begin
             result = dataM.result_alu;
+            skip = 1'b0;
         end
     end
 

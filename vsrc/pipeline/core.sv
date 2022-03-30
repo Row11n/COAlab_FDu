@@ -49,6 +49,9 @@ module core
 	u1 regwrite;
 	creg_addr_t wa;
 	word_t result;
+	u1 jump;
+	u64 pcsrc;
+	u1 skip;
 
 	assign raw_instr = iresp.data;
 	assign ireq.addr = pc;
@@ -58,7 +61,9 @@ module core
 		.clk(clk),
 		.reset(reset),
 		.pc(pc),
-		.stall(stall)
+		.stall(stall),
+		.jump(jump),
+		.pcsrc(pcsrc)
 	);
 
 	fetch fetch
@@ -74,7 +79,8 @@ module core
 		.reset(reset),
 		.dataF(dataF),
 		.dataF_nxt(dataF_nxt),
-		.stall(stall)
+		.stall(stall),
+		.jump(jump)
 	);
 
 	decode decode
@@ -86,7 +92,9 @@ module core
 		.rd1(rd1),
 		.rd2(rd2),
 		.forward(forward),
-		.stall(stall)
+		.stall(stall),
+		.jump(jump),
+		.pcsrc(pcsrc)
 	);
 
 	decode_reg decode_reg
@@ -137,7 +145,8 @@ module core
 		.result(result),
 		.forward(forward),
 		.pc_result(pc_result),
-		.pc_valid(pc_valid)
+		.pc_valid(pc_valid),
+		.skip(skip)
 	);
 
 	regfile regfile(
@@ -159,7 +168,7 @@ module core
 		.valid              (pc_valid),
 		.pc                 (pc_result),
 		.instr              (0),
-		.skip               (0),
+		.skip               (skip),
 		.isRVC              (0),
 		.scFailed           (0),
 		.wen                (regwrite),

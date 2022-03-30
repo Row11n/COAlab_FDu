@@ -15,18 +15,22 @@ module pc_reg
 (
     input logic clk, reset,
     output u64 pc,
-	input u1 stall
+	input u1 stall,
+	input u1 jump,
+	input u64 pcsrc
 );
 
     u64 pc_nxt;
     pcselect pcselect
 	(
 		.pcplus4(pc + 4),
+		.pcsrc(pcsrc),
 		.pc_selected(pc_nxt),
-		.stall(stall)
+		.stall(stall),
+		.jump(jump)
 	);
 
-    always_ff @( posedge clk )
+    always_ff @(posedge clk)
 	begin
 		if(reset)
 		begin
