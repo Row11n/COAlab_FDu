@@ -14,14 +14,16 @@ module pc_reg
     import pipes::*;
 (
     input logic clk, reset,
-    output u64 pc
+    output u64 pc,
+	input u1 stall
 );
 
     u64 pc_nxt;
     pcselect pcselect
 	(
 		.pcplus4(pc + 4),
-		.pc_selected(pc_nxt)
+		.pc_selected(pc_nxt),
+		.stall(stall)
 	);
 
     always_ff @( posedge clk )

@@ -13,9 +13,17 @@ import common::*;
 import pipes::*;
 (
     input u64 pcplus4,
-    output u64 pc_selected
+    output u64 pc_selected,
+    input u1 stall
 );
-    assign pc_selected = pcplus4;
+
+    always_comb
+    begin
+        if(stall)
+            pc_selected = pcplus4 - 4;
+        else
+            pc_selected = pcplus4;
+    end
 
 endmodule
 `endif

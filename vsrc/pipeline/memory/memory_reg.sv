@@ -18,13 +18,10 @@ module memory_reg
     always_ff @(posedge clk)
     begin
     if(reset)
-         begin
-
-         end
-         else
-         begin
-             dataM_nxt <= dataM;
-         end
+        begin
+        end
+    else
+        dataM_nxt <= dataM;
     end
 
 endmodule

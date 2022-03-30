@@ -31,19 +31,8 @@ module core
 	input  dbus_resp_t dresp
 );
 	/* TODO: Add your pipeline here. */
-	u64 pc, pc_nxt;
-
-	pc_reg pc_reg
-	(
-		.clk(clk),
-		.reset(reset),
-		.pc(pc)
-	);
-
+	u64 pc, pc_nxt, pc_result;
 	u32 raw_instr;
-	assign raw_instr = iresp.data;
-	assign ireq.addr = pc;
-
 	fetch_data_t dataF;
 	fetch_data_t dataF_nxt;
 	decode_data_t dataD;
@@ -53,11 +42,24 @@ module core
 	memory_data_t dataM;
 	memory_data_t dataM_nxt;
 	forward_data_t forward;
+	u1 stall;
+	u1 pc_valid;
 	creg_addr_t ra1, ra2;
     word_t rd1, rd2;
 	u1 regwrite;
 	creg_addr_t wa;
 	word_t result;
+
+	assign raw_instr = iresp.data;
+	assign ireq.addr = pc;
+
+	pc_reg pc_reg
+	(
+		.clk(clk),
+		.reset(reset),
+		.pc(pc),
+		.stall(stall)
+	);
 
 	fetch fetch
 	(
@@ -71,7 +73,8 @@ module core
 		.clk(clk),
 		.reset(reset),
 		.dataF(dataF),
-		.dataF_nxt(dataF_nxt)
+		.dataF_nxt(dataF_nxt),
+		.stall(stall)
 	);
 
 	decode decode
@@ -82,7 +85,8 @@ module core
 		.ra2(ra2),
 		.rd1(rd1),
 		.rd2(rd2),
-		.forward(forward)
+		.forward(forward),
+		.stall(stall)
 	);
 
 	decode_reg decode_reg
@@ -131,7 +135,9 @@ module core
 		.regwrite(regwrite),
 		.wa(wa),
 		.result(result),
-		.forward(forward)
+		.forward(forward),
+		.pc_result(pc_result),
+		.pc_valid(pc_valid)
 	);
 
 	regfile regfile(
@@ -150,8 +156,8 @@ module core
 		.clock              (clk),
 		.coreid             (0),
 		.index              (0),
-		.valid              (~reset),
-		.pc                 (pc - 16),
+		.valid              (pc_valid),
+		.pc                 (pc_result),
 		.instr              (0),
 		.skip               (0),
 		.isRVC              (0),

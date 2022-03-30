@@ -29,6 +29,10 @@ parameter F3_SD = 3'b011;
 parameter F7_LD = 7'b0000011;
 parameter F3_LD = 3'b011;
 
+parameter F7_NOP = 7'b0000000;
+parameter F3_NOP = 3'b000;
+parameter FL7_NOP = 7'b0000000;
+
 
 
 
@@ -40,7 +44,7 @@ typedef struct packed {
 } fetch_data_t;
  
 typedef enum logic [5:0] {
-	UNKNOWN, ADDI, LUI, AUIPC, OR, SUB, XORI, AND, XOR, ADD, SD, LD
+	UNKNOWN, ADDI, LUI, AUIPC, OR, SUB, XORI, AND, XOR, ADD, SD, LD, NOP
 } decoded_op_t;
 
 typedef enum logic [4:0] {
@@ -53,6 +57,7 @@ typedef struct packed {
 	u1 regwrite;
 	u1 memwrite;
 	u1 memread;
+	u1 nop_signal;
 } control_t;
 
 typedef struct packed {
@@ -74,7 +79,7 @@ typedef struct packed {
 typedef struct packed {
 	u64 pc;
 	control_t ctl;
-	word_t result;
+	word_t result_alu;
 	word_t wd;
 	creg_addr_t wa;
 } memory_data_t;

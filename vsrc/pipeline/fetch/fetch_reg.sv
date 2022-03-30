@@ -13,7 +13,8 @@ module fetch_reg
 (
     input clk, reset,
     input fetch_data_t dataF,
-    output fetch_data_t dataF_nxt
+    output fetch_data_t dataF_nxt,
+    input u1 stall
 );
 
     always_ff @(posedge clk)
@@ -23,7 +24,16 @@ module fetch_reg
          end
          else
          begin
-             dataF_nxt <= dataF;
+             if(stall)
+             begin
+                 dataF_nxt.raw_instr <= '0;
+                 dataF_nxt.pc <= dataF.pc;
+             end
+             else
+             begin
+                 dataF_nxt <= dataF;
+             end
+             
          end
     end
 

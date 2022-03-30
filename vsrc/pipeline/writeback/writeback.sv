@@ -15,11 +15,14 @@ module writeback
     output u1 regwrite,
     output creg_addr_t wa,
     output word_t result,
-    output forward_data_t forward
+    output forward_data_t forward,
+    output u64 pc_result,
+    output u1 pc_valid
 );
 
     assign regwrite = dataM.ctl.regwrite;
     assign wa = dataM.wa;
+    assign pc_result = dataM.pc;
 
     always_comb
     begin
@@ -29,13 +32,15 @@ module writeback
         end
         else
         begin
-            result = dataM.result;
+            result = dataM.result_alu;
         end
     end
 
     assign forward.waW = dataM.wa;
     assign forward.resultW = result;
     assign forward.regwriteW = regwrite;
+
+    assign pc_valid = ~dataM.ctl.nop_signal;
 
 endmodule
 `endif 

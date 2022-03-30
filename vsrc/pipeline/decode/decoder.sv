@@ -22,7 +22,38 @@ module decoder
 
     always_comb
     begin
+    ctl.memwrite = 1'b0;
+    ctl.memread = 1'b0;
+    ctl.regwrite = 1'b0;
+    ctl.nop_signal = 1'b0;
         unique case(f7)
+
+        F7_NOP:
+        begin
+            unique case(f3)
+                default:
+                begin
+                    
+                end
+
+                F3_NOP:
+                begin
+                    unique case(fl7)
+                    default:
+                    begin
+                        
+                    end
+
+                    FL7_NOP:
+                    begin
+                        ctl.op = NOP;
+                        ctl.nop_signal = 1'b1;      
+                    end
+                    endcase
+
+                end
+            endcase
+        end
 
         F7_ADDI_XORI:
         begin

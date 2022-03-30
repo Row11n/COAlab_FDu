@@ -31,6 +31,7 @@ module execute
     assign dataE.result_alu = result_alu;
     assign dataE.wd = dataD.wd;
     assign dataE.wa = dataD.dst;
+
     
     assign forward.waE = dataE.wa;
     assign forward.resultE = dataE.result_alu;

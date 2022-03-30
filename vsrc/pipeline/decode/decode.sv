@@ -18,7 +18,8 @@ module decode
     output decode_data_t dataD,
     output creg_addr_t ra1, ra2,
     input word_t rd1, rd2,
-    input forward_data_t forward
+    input forward_data_t forward,
+    output u1 stall
 );
     control_t ctl;
     decoder decoder
@@ -33,6 +34,7 @@ module decode
     assign dataD.dst = dataF.raw_instr[11:7];
     assign dataD.wd = rd2;
 
+    //scra
     always_comb
     begin
         if(ra1 != '0 && ra1 == forward.waE && forward.regwriteE == 1'b1)
@@ -45,6 +47,7 @@ module decode
             dataD.srca = rd1;
     end
 
+    //scrb
     extender extender
     (
         .raw_instr(dataF.raw_instr),
@@ -56,6 +59,16 @@ module decode
         .ra2(ra2)
     );
     assign dataD.pc = dataF.pc;
+
+    //ifstall
+    always_comb
+    begin
+        if(ctl.memread == 1'b1 && ctl.regwrite == 1'b1)
+            stall = 1'b1;
+        else
+            stall = 1'b0;
+    end
+
 
 endmodule
 `endif 

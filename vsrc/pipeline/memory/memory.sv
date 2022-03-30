@@ -42,13 +42,23 @@ module memory
     assign dreq.addr = dataE.result_alu;
     assign dataM.pc = dataE.pc;
     assign dataM.ctl = dataE.ctl;
-    assign dataM.result = dataE.result_alu; //temporary
+    assign dataM.result_alu = dataE.result_alu; //temporary
 
     assign dataM.wa = dataE.wa;
-
     assign forward.waM = dataM.wa;
-    assign forward.resultM =  dataM.result;
     assign forward.regwriteM = dataM.ctl.regwrite;
+
+    always_comb
+    begin
+        if(dataM.ctl.memwrite == 1'b1 || dataM.ctl.memread == 1'b1) 
+        begin
+            forward.resultM = dataM.wd;
+        end
+        else
+        begin
+            forward.resultM = dataM.result_alu;
+        end
+    end
 
 
 
