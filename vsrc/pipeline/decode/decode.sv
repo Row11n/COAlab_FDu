@@ -18,7 +18,9 @@ module decode
     output decode_data_t dataD,
     output creg_addr_t ra1, ra2,
     input word_t rd1, rd2,
-    input forward_data_t forward,
+    input forward_data_t forwardE,
+    input forward_data_t forwardM,
+    input forward_data_t forwardW,
     output u1 stall,
     output u1 jump,
     output u64 pcsrc
@@ -38,12 +40,12 @@ module decode
     //wd's forward-test
     always_comb
     begin
-        if(ra2 != '0 && ra2 == forward.waE && forward.regwriteE == 1'b1)
-            dataD.wd = forward.resultE;
-        else if(ra2 != '0 && ra2 == forward.waM && forward.regwriteM == 1'b1)
-            dataD.wd = forward.resultM;
-        else if(ra2 != '0 && ra2 == forward.waW && forward.regwriteW == 1'b1)
-            dataD.wd = forward.resultW;
+        if(ra2 != '0 && ra2 == forwardE.wa && forwardE.regwrite == 1'b1)
+            dataD.wd = forwardE.result;
+        else if(ra2 != '0 && ra2 == forwardM.wa && forwardM.regwrite == 1'b1)
+            dataD.wd = forwardM.result;
+        else if(ra2 != '0 && ra2 == forwardW.wa && forwardW.regwrite == 1'b1)
+            dataD.wd = forwardW.result;
         else
             dataD.wd = rd2;
     end
@@ -51,12 +53,12 @@ module decode
     //scra
     always_comb
     begin
-        if(ra1 != '0 && ra1 == forward.waE && forward.regwriteE == 1'b1)
-            dataD.srca = forward.resultE;
-        else if(ra1 != '0 && ra1 == forward.waM && forward.regwriteM == 1'b1)
-            dataD.srca = forward.resultM;
-        else if(ra1 != '0 && ra1 == forward.waW && forward.regwriteW == 1'b1)
-            dataD.srca = forward.resultW;
+        if(ra1 != '0 && ra1 == forwardE.wa && forwardE.regwrite == 1'b1)
+            dataD.srca = forwardE.result;
+        else if(ra1 != '0 && ra1 == forwardM.wa && forwardM.regwrite == 1'b1)
+            dataD.srca = forwardM.result;
+        else if(ra1 != '0 && ra1 == forwardW.wa && forwardW.regwrite == 1'b1)
+            dataD.srca = forwardW.result;
         else
             dataD.srca = rd1;
     end
@@ -69,7 +71,9 @@ module decode
         .pc(dataF.pc),
         .rd2(rd2),
         .srcb(dataD.srcb),
-        .forward(forward),
+        .forwardE(forwardE),
+		.forwardM(forwardM),
+		.forwardW(forwardW),
         .ra2(ra2)
     );
     assign dataD.pc = dataF.pc;

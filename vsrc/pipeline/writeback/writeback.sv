@@ -15,7 +15,7 @@ module writeback
     output u1 regwrite,
     output creg_addr_t wa,
     output word_t result,
-    output forward_data_t forward,
+    output forward_data_t forwardW,
     output u64 pc_result,
     output u1 pc_valid,
     output u1 skip
@@ -42,9 +42,9 @@ module writeback
         end
     end
 
-    assign forward.waW = dataM.wa;
-    assign forward.resultW = result;
-    assign forward.regwriteW = regwrite;
+    assign forwardW.wa = dataM.wa;
+    assign forwardW.result = result;
+    assign forwardW.regwrite = regwrite;
 
     assign pc_valid = ~dataM.ctl.nop_signal;
 

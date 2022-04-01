@@ -15,7 +15,7 @@ module memory
     output memory_data_t dataM,
     output dbus_req_t dreq,
     input dbus_resp_t dresp,
-    output forward_data_t forward
+    output forward_data_t forwardM
 );
 
     always_latch
@@ -47,18 +47,18 @@ module memory
 
     assign dataM.wa = dataE.wa;
 
-    assign forward.waM = dataM.wa;
-    assign forward.regwriteM = dataM.ctl.regwrite;
+    assign forwardM.wa = dataM.wa;
+    assign forwardM.regwrite = dataM.ctl.regwrite;
 
     always_comb
     begin
         if(dataM.ctl.memwrite == 1'b1 || dataM.ctl.memread == 1'b1) 
         begin
-            forward.resultM = dataM.wd;
+            forwardM.result = dataM.wd;
         end
         else
         begin
-            forward.resultM = dataM.result_alu;
+            forwardM.result = dataM.result_alu;
         end
     end
 

@@ -96,15 +96,9 @@ typedef struct packed {
 } memory_data_t;
 
 typedef struct packed {
-	word_t resultE;
-	word_t resultM;
-	word_t resultW;
-	creg_addr_t waE;
-	creg_addr_t waM;
-	creg_addr_t waW;
-	u1 regwriteE;
-	u1 regwriteM;
-	u1 regwriteW;
+	word_t result;
+	creg_addr_t wa;
+	u1 regwrite;
 } forward_data_t;
 
 endpackage

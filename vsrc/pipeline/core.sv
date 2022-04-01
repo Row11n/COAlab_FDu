@@ -41,7 +41,9 @@ module core
 	execute_data_t dataE_nxt;
 	memory_data_t dataM;
 	memory_data_t dataM_nxt;
-	forward_data_t forward;
+	forward_data_t forwardE;
+	forward_data_t forwardM;
+	forward_data_t forwardW;
 	u1 stall;
 	u1 pc_valid;
 	creg_addr_t ra1, ra2;
@@ -91,7 +93,9 @@ module core
 		.ra2(ra2),
 		.rd1(rd1),
 		.rd2(rd2),
-		.forward(forward),
+		.forwardE(forwardE),
+		.forwardM(forwardM),
+		.forwardW(forwardW),
 		.stall(stall),
 		.jump(jump),
 		.pcsrc(pcsrc)
@@ -109,7 +113,7 @@ module core
 	(
 		.dataD(dataD_nxt),
 		.dataE(dataE),
-		.forward(forward)
+		.forwardE(forwardE)
 	);
 
 	execute_reg execute_reg
@@ -126,7 +130,7 @@ module core
 		.dataM(dataM),
 		.dreq(dreq),
 		.dresp(dresp),
-		.forward(forward)
+		.forwardM(forwardM)
 	);
 
 	memory_reg memory_reg
@@ -143,7 +147,7 @@ module core
 		.regwrite(regwrite),
 		.wa(wa),
 		.result(result),
-		.forward(forward),
+		.forwardW(forwardW),
 		.pc_result(pc_result),
 		.pc_valid(pc_valid),
 		.skip(skip)

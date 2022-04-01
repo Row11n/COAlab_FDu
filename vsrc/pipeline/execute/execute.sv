@@ -14,7 +14,7 @@ module execute
 (
     input decode_data_t dataD,
     output execute_data_t dataE,
-    output forward_data_t forward
+    output forward_data_t forwardE
 );
     word_t result_alu;
 
@@ -33,9 +33,9 @@ module execute
     assign dataE.wa = dataD.dst;
 
     
-    assign forward.waE = dataE.wa;
-    assign forward.resultE = dataE.result_alu;
-    assign forward.regwriteE = dataE.ctl.regwrite;
+    assign forwardE.wa = dataE.wa;
+    assign forwardE.result = dataE.result_alu;
+    assign forwardE.regwrite = dataE.ctl.regwrite;
     
 endmodule
 `endif

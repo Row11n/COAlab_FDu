@@ -17,7 +17,9 @@ module extender
     input u64 pc,
     input word_t rd2,
     output word_t srcb,
-    input forward_data_t forward,
+    input forward_data_t forwardE,
+    input forward_data_t forwardM,
+    input forward_data_t forwardW,
     input creg_addr_t ra2
 );
 
@@ -46,12 +48,12 @@ module extender
 
         OR, SUB, AND, XOR, ADD, BEQ:
         begin
-            if(ra2 != '0 && ra2 == forward.waE && forward.regwriteE == 1'b1)
-                srcb = forward.resultE;
-            else if(ra2 != '0 && ra2 == forward.waM && forward.regwriteM == 1'b1)
-                srcb = forward.resultM;
-            else if(ra2 != '0 && ra2 == forward.waW && forward.regwriteW == 1'b1)
-                srcb = forward.resultW;
+            if(ra2 != '0 && ra2 == forwardE.wa && forwardE.regwrite == 1'b1)
+                srcb = forwardE.result;
+            else if(ra2 != '0 && ra2 == forwardM.wa && forwardM.regwrite == 1'b1)
+                srcb = forwardM.result;
+            else if(ra2 != '0 && ra2 == forwardW.wa && forwardW.regwrite == 1'b1)
+                srcb = forwardW.result;
             else
                 srcb = rd2;
         end
