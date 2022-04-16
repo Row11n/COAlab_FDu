@@ -100,6 +100,7 @@ module decode
     //ifjump
     always_comb
     begin
+        jump = 1'b0;
         if(ctl.branch)
         begin
             unique case(ctl.op)
@@ -112,6 +113,56 @@ module decode
             BEQ:
             begin
                 if(dataD.srca == dataD.srcb)
+                begin
+                    jump = 1'b1;
+                end
+                else
+                    jump = 1'b0;
+            end
+
+            BNE:
+            begin
+                if(dataD.srca != dataD.srcb)
+                begin
+                    jump = 1'b1;
+                end
+                else
+                    jump = 1'b0;
+            end
+
+            BLT:
+            begin
+                if($signed(dataD.srca) < $signed(dataD.srcb))
+                begin
+                    jump = 1'b1;
+                end
+                else
+                    jump = 1'b0;
+            end
+
+            BGE:
+            begin
+                if($signed(dataD.srca) >= $signed(dataD.srcb))
+                begin
+                    jump = 1'b1;
+                end
+                else
+                    jump = 1'b0;
+            end
+
+            BLTU:
+            begin
+                if(dataD.srca < dataD.srcb)
+                begin
+                    jump = 1'b1;
+                end
+                else
+                    jump = 1'b0;
+            end
+
+            BGEU:
+            begin
+                if(dataD.srca >= dataD.srcb)
                 begin
                     jump = 1'b1;
                 end

@@ -25,10 +25,11 @@ module pc_alu
 
             default:
             begin
-                
+                offset = '0;
+                pcsrc = pc;
             end
 
-            BEQ:
+            BEQ, BNE, BLT, BGE, BLTU, BGEU:
             begin
                 offset = {{51{raw_instr[31]}}, raw_instr[31], raw_instr[7],
                     raw_instr[30:25], raw_instr[11:8], 1'b0};
