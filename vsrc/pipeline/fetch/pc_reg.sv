@@ -17,7 +17,9 @@ module pc_reg
     output u64 pc,
 	input u1 stall,
 	input u1 jump,
-	input u64 pcsrc
+	input u64 pcsrc,
+	input u1 stallM,
+	input u1 stallI
 );
 
     u64 pc_nxt;
@@ -27,7 +29,9 @@ module pc_reg
 		.pcsrc(pcsrc),
 		.pc_selected(pc_nxt),
 		.stall(stall),
-		.jump(jump)
+		.jump(jump),
+		.stallM(stallM),
+		.stallI(stallI)
 	);
 
     always_ff @(posedge clk)

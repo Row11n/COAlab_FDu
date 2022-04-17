@@ -16,15 +16,17 @@ import pipes::*;
     input u64 pcsrc,
     output u64 pc_selected,
     input u1 stall,
-    input u1 jump
+    input u1 jump,
+    input u1 stallM,
+    input u1 stallI
 );
 
     always_comb
     begin
-        if(stall)
-            pc_selected = pcplus4 - 4;
-        else if(jump)
+        if(jump)
             pc_selected = pcsrc;
+        else if(stall || stallM || stallI)
+            pc_selected = pcplus4 - 4;
         else
             pc_selected = pcplus4;
     end

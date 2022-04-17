@@ -13,13 +13,18 @@ module execute_reg
 (
     input clk, reset,
     input execute_data_t dataE,
-    output execute_data_t dataE_nxt
+    output execute_data_t dataE_nxt,
+    input u1 stallM
 );
     always_ff @(posedge clk)
     begin
     if(reset)
     begin
 
+    end
+    else if(stallM)
+    begin
+        dataE_nxt <= dataE_nxt;
     end
     else
     begin

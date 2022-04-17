@@ -45,6 +45,8 @@ module core
 	forward_data_t forwardM;
 	forward_data_t forwardW;
 	u1 stall;
+	u1 stallM;
+	u1 stallI;
 	u1 pc_valid;
 	creg_addr_t ra1, ra2;
     word_t rd1, rd2;
@@ -55,8 +57,6 @@ module core
 	u64 pcsrc;
 	u1 skip;
 
-	assign raw_instr = iresp.data;
-	assign ireq.addr = pc;
 
 	pc_reg pc_reg
 	(
@@ -65,14 +65,20 @@ module core
 		.pc(pc),
 		.stall(stall),
 		.jump(jump),
-		.pcsrc(pcsrc)
+		.pcsrc(pcsrc),
+		.stallM(stallM),
+		.stallI(stallI)
 	);
 
 	fetch fetch
 	(
 		.dataF(dataF),
 		.raw_instr(raw_instr),
-		.pc(pc)
+		.pc(pc),
+		.ireq(ireq),
+		.iresp(iresp),
+		.stallI(stallI),
+		.stallM(stallM)
 	);
 
 	fetch_reg fetch_reg
@@ -106,7 +112,8 @@ module core
 		.clk(clk),
 		.reset(reset),
 		.dataD(dataD),
-		.dataD_nxt(dataD_nxt)
+		.dataD_nxt(dataD_nxt),
+		.stallM(stallM)
 	);
 
 	execute execute
@@ -121,7 +128,8 @@ module core
 		.clk(clk),
 		.reset(reset),
 		.dataE(dataE),
-		.dataE_nxt(dataE_nxt)
+		.dataE_nxt(dataE_nxt),
+		.stallM(stallM)
 	);
 
 	memory memory
@@ -130,7 +138,8 @@ module core
 		.dataM(dataM),
 		.dreq(dreq),
 		.dresp(dresp),
-		.forwardM(forwardM)
+		.forwardM(forwardM),
+		.stallM(stallM)
 	);
 
 	memory_reg memory_reg
@@ -138,7 +147,8 @@ module core
 		.clk(clk),
 		.reset(reset),
 		.dataM(dataM),
-		.dataM_nxt(dataM_nxt)
+		.dataM_nxt(dataM_nxt),
+		.stallM(stallM)
 	);
 
 	writeback writeback

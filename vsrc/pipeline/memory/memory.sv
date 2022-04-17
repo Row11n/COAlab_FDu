@@ -15,7 +15,8 @@ module memory
     output memory_data_t dataM,
     output dbus_req_t dreq,
     input dbus_resp_t dresp,
-    output forward_data_t forwardM
+    output forward_data_t forwardM,
+    output u1 stallM
 );
 
     always_latch
@@ -29,7 +30,7 @@ module memory
         end
         else if(dataE.ctl.memread == 1'b1)
         begin
-            dreq.valid = 1'b0;
+            dreq.valid = 1'b1;
             dreq.strobe = '0;
             dataM.wd = dresp.data;
         end
@@ -62,7 +63,7 @@ module memory
         end
     end
 
-
+    assign stallM = dreq.valid && ~dresp.data_ok;
 
 endmodule
 `endif 

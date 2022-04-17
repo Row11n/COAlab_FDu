@@ -13,13 +13,29 @@ module memory_reg
 (
     input clk, reset,
     input memory_data_t dataM,
-    output memory_data_t dataM_nxt
+    output memory_data_t dataM_nxt,
+    input u1 stallM
 );
     always_ff @(posedge clk)
     begin
     if(reset)
-        begin
-        end
+    begin
+    end
+    else if(stallM)
+    begin
+        dataM_nxt.pc <= dataM.pc;
+        dataM_nxt.result_alu <= '0;
+        dataM_nxt.wd <= '0;
+        dataM_nxt.wa <= '0;
+        dataM_nxt.addr_31 <= '0;
+        dataM_nxt.ctl.op <= NOP;
+        dataM_nxt.ctl.alufunc <= '0;
+        dataM_nxt.ctl.regwrite <= '0;
+        dataM_nxt.ctl.memwrite <= '0;
+        dataM_nxt.ctl.memread <= '0;
+        dataM_nxt.ctl.branch <= '0;
+        dataM_nxt.ctl.nop_signal <= 1'b1;
+    end
     else
         dataM_nxt <= dataM;
     end

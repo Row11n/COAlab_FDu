@@ -12,14 +12,18 @@ module decode_reg
     import pipes::*;
 (
     input clk, reset,
-
     input decode_data_t dataD,
-    output decode_data_t dataD_nxt
+    output decode_data_t dataD_nxt,
+    input u1 stallM
 );
      always_ff @(posedge clk)
      begin
          if(reset)
          begin
+         end
+         else if(stallM)
+         begin
+             dataD_nxt <= dataD_nxt;
          end
          else
          begin
