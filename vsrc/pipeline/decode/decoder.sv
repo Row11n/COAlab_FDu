@@ -370,7 +370,7 @@ module decoder
             endcase
         end
 
-        F7_SD:
+        F7_SD_SH_SB_SW:
         begin
             unique case(f3)
             default:
@@ -389,10 +389,43 @@ module decoder
                 ra2 = raw_instr[24:20];
             end
 
+            F3_SH:
+            begin
+                ctl.op = SH;
+                ctl.regwrite = 1'b0;
+                ctl.memread = 1'b0;
+                ctl.memwrite = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_SB:
+            begin
+                ctl.op = SB;
+                ctl.regwrite = 1'b0;
+                ctl.memread = 1'b0;
+                ctl.memwrite = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_SW:
+            begin
+                ctl.op = SW;
+                ctl.regwrite = 1'b0;
+                ctl.memread = 1'b0;
+                ctl.memwrite = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
             endcase
         end
 
-        F7_LD:
+        F7_LD_LWU_LHU_LBU_LH_LB_LW:
         begin
             unique case(f3)
             default:
@@ -411,10 +444,76 @@ module decoder
                 ra2 = raw_instr[24:20];
             end
 
+            F3_LH:
+            begin
+                ctl.op = LH;
+                ctl.regwrite = 1'b1;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_LW:
+            begin
+                ctl.op = LW;
+                ctl.regwrite = 1'b1;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_LB:
+            begin
+                ctl.op = LB;
+                ctl.regwrite = 1'b1;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_LWU:
+            begin
+                ctl.op = LWU;
+                ctl.regwrite = 1'b1;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_LHU:
+            begin
+                ctl.op = LHU;
+                ctl.regwrite = 1'b1;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
+            F3_LBU:
+            begin
+                ctl.op = LBU;
+                ctl.regwrite = 1'b1;
+                ctl.memwrite = 1'b0;
+                ctl.memread = 1'b1;
+                ctl.alufunc = ALU_ADD;
+                ra1 = raw_instr[19:15];
+                ra2 = raw_instr[24:20];
+            end
+
             endcase
         end
 
-        F7_BEQ_BNE_BLT_BGE_BLTU:
+        F7_BEQ_BNE_BLT_BGE_BLTU_BGEU:
         begin
             unique case(f3)
 

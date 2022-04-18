@@ -28,7 +28,7 @@ module alu
 			ALU_AND: c = a & b;
 			ALU_SRL: c = a >> b[5:0];
 			ALU_SLL: c = a << b[5:0];
-			ALU_SRA: c = $signed(a) >> b[5:0];
+			ALU_SRA: c = $signed(a) >>> b[5:0];
 			ALU_FUCKING: c = a;
 			ALU_SUCKING: c = b;
 			ALU_SLT: c = {{63{1'b0}}, ($signed(a) < $signed(b))};
@@ -54,13 +54,13 @@ module alu
 
 			ALU_SRAW:
 			begin
-				t1 = $signed(a) >> b[4:0];
+				t1 = $signed({{32{a[31]}}, a[31:0]}) >>> b[4:0];
 				c = {{32{t1[31]}}, t1[31:0]};
 			end
 			
 			ALU_SRLW:
 			begin
-				t1 = a >> b[4:0];
+				t1 = {{32{1'b0}}, a[31:0] >> b[4:0]};
 				c = {{32{t1[31]}}, t1[31:0]};
 			end
 

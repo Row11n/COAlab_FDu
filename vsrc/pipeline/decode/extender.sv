@@ -46,8 +46,8 @@ module extender
             srcb = pc + {{32{raw_instr[31]}}, raw_instr[31:12], 12'b0};
         end
 
-        OR, SUB, AND, XOR, ADD, BEQ, SLLW, SRL, SLT, 
-        ADDW, SRA, SLL, BNE, BLT, BGE, BLTU, BGEU, SRAW:
+        OR, SUB, AND, XOR, ADD, BEQ, SLLW, SRL, SLT, SUBW, SLTU,
+        ADDW, SRA, SLL, BNE, BLT, BGE, BLTU, BGEU, SRAW, SRLW:
         begin
             if(ra2 != '0 && ra2 == forwardE.wa && forwardE.regwrite == 1'b1)
                 srcb = forwardE.result;
@@ -59,12 +59,12 @@ module extender
                 srcb = rd2;
         end
 
-        SD:
+        SD, SH, SB, SW:
         begin
             srcb = {{52{raw_instr[31]}}, raw_instr[31:25], raw_instr[11:7]};
         end
 
-        LD:
+        LD, LWU, LHU, LBU, LH, LW, LB:
         begin
             srcb = {{52{raw_instr[31]}}, raw_instr[31:20]};
         end

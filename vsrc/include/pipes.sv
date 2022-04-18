@@ -41,17 +41,26 @@ parameter FL7_SUB = 7'b0100000;
 parameter FL7_SLT = 7'b0000000;
 parameter FL7_SLL = 7'b0000000;
 
-parameter F7_SD = 7'b0100011;
+parameter F7_SD_SH_SB_SW = 7'b0100011;
 parameter F3_SD = 3'b011;
+parameter F3_SH = 3'b001;
+parameter F3_SB = 3'b000;
+parameter F3_SW = 3'b010;
 
-parameter F7_LD = 7'b0000011;
+parameter F7_LD_LWU_LHU_LBU_LH_LB_LW = 7'b0000011;
 parameter F3_LD = 3'b011;
+parameter F3_LWU = 3'b110;
+parameter F3_LHU = 3'b101;
+parameter F3_LBU = 3'b100;
+parameter F3_LH = 3'b001;
+parameter F3_LB = 3'b000;
+parameter F3_LW = 3'b010;
 
 parameter F7_NOP = 7'b0000000;
 parameter F3_NOP = 3'b000;
 parameter FL7_NOP = 7'b0000000;
 
-parameter F7_BEQ_BNE_BLT_BGE_BLTU = 7'b1100011;
+parameter F7_BEQ_BNE_BLT_BGE_BLTU_BGEU = 7'b1100011;
 parameter F3_BEQ = 3'b000;
 parameter F3_BNE = 3'b001;
 parameter F3_BLT = 3'b100;
@@ -96,7 +105,7 @@ typedef enum logic [5:0] {
 	SD, LD, NOP, BEQ, ANDI, ORI, JAL, JALR, ADDIW, SLLW, SRL,
 	SUBW, SRAI, SLT, SRAW, SLTU, SLLI, SRLW, ADDW, SRAIW, SRA,
 	SLL, SRLI, SLLIW, BNE, BLT, BGE, BLTU, BGEU, SRLIW, SLTI,
-	SLTIU
+	SLTIU, SH, SB, SW, LWU, LHU, LBU, LH, LB, LW
 } decoded_op_t;
 
 typedef enum logic [4:0] {

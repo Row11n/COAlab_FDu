@@ -88,7 +88,8 @@ module core
 		.dataF(dataF),
 		.dataF_nxt(dataF_nxt),
 		.stall(stall),
-		.jump(jump)
+		.jump(jump),
+		.stallM(stallM)
 	);
 
 	decode decode

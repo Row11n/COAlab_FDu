@@ -4,6 +4,8 @@
 `ifdef VERILATOR
 `include "include/common.sv"
 `include "include/pipes.sv"
+`include "pipeline/memory/writedata.sv"
+`include "pipeline/memory/readdata.sv"
 `else
 `endif 
 
