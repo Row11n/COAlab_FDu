@@ -24,24 +24,40 @@ module memory
     msize_t msize;
     u1 mem_unsigned;
     strobe_t strobe;
+    u64 wd;
 
     always_comb
     begin
-        msize = MSIZE1;
-        mem_unsigned = 1'b0;
         unique case(dataE.ctl.op)
         default:
         begin
+            msize = MSIZE8;
+            mem_unsigned = 1'b0;
         end
 
-        SD: msize = MSIZE8;
-        SW: msize = MSIZE4;
-        SH: msize = MSIZE2;
-        SB: msize = MSIZE1;
-        LD: msize = MSIZE8;
-        LW: msize = MSIZE4;
-        LH: msize = MSIZE2;
-        LB: msize = MSIZE1;
+        SD, LD: 
+        begin
+            msize = MSIZE8;
+            mem_unsigned = 1'b0;
+        end
+
+        SW, LW:
+        begin
+            msize = MSIZE4;
+            mem_unsigned = 1'b0;
+        end
+
+        SH, LH:
+        begin
+            msize = MSIZE2;
+            mem_unsigned = 1'b0;
+        end
+
+        SB, LB:
+        begin
+            msize = MSIZE1;
+            mem_unsigned = 1'b0;
+        end
 
         LWU:
         begin
@@ -75,6 +91,7 @@ module memory
         else if(dataE.ctl.memread == 1'b1)
         begin
             dreq.valid = 1'b1;
+            dataM.wd = wd;
             dreq.strobe = '0;
         end
         else
@@ -95,7 +112,7 @@ module memory
     readdata readdata
     (
         ._rd(dresp.data),
-        .rd(dataM.wd),
+        .rd(wd),
         .addr(dataE.result_alu[2:0]),
         .msize(msize),
         .mem_unsigned(mem_unsigned)

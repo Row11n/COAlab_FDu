@@ -31,7 +31,7 @@ module memory_reg
         dataM_nxt.wa <= '0;
         dataM_nxt.addr_31 <= '0;
         dataM_nxt.ctl.op <= NOP;
-        dataM_nxt.ctl.alufunc <= '0;
+        dataM_nxt.ctl.alufunc <= ALU_SUCKING;
         dataM_nxt.ctl.regwrite <= '0;
         dataM_nxt.ctl.memwrite <= '0;
         dataM_nxt.ctl.memread <= '0;

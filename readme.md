@@ -1,5 +1,7 @@
 # Architecture 2022Spring Fudan
 
+## 本仓库用于个人代码管理
+
 课程网站：https://fducslg.github.io/Arch-2022Spring-FDU/
 
 ### 项目结构
