@@ -77,8 +77,7 @@ module core
 		.pc(pc),
 		.ireq(ireq),
 		.iresp(iresp),
-		.stallI(stallI),
-		.stallM(stallM)
+		.stallI(stallI)
 	);
 
 	fetch_reg fetch_reg

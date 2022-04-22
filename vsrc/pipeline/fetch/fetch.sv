@@ -17,8 +17,7 @@ import pipes::*;
     input u64 pc,
     output ibus_req_t ireq,
     input ibus_resp_t iresp,
-    output u1 stallI,
-    input u1 stallM
+    output u1 stallI
 );
 
     assign stallI = ireq.valid && ~iresp.data_ok;
