@@ -37,6 +37,8 @@ module decode
     assign dataD.ctl = ctl;
     assign dataD.dst = dataF.raw_instr[11:7];
 
+
+
     //wd's forward-test
     always_comb
     begin
@@ -81,9 +83,9 @@ module decode
     //ifstall
     always_comb
     begin
-        if(ctl.memread == 1'b1 && ctl.regwrite == 1'b1)
-            stall = 1'b1;
-        else
+        //if(ctl.memread == 1'b1 && ctl.regwrite == 1'b1)
+        //    stall = 1'b1;
+        //else
             stall = 1'b0;
     end
 

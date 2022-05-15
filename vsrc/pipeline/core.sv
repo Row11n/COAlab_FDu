@@ -32,7 +32,6 @@ module core
 );
 	/* TODO: Add your pipeline here. */
 	u64 pc, pc_nxt, pc_result;
-	u32 raw_instr;
 	fetch_data_t dataF;
 	fetch_data_t dataF_nxt;
 	decode_data_t dataD;
@@ -47,6 +46,7 @@ module core
 	u1 stall;
 	u1 stallM;
 	u1 stallI;
+	u1 stallI_nxt;
 	u1 pc_valid;
 	creg_addr_t ra1, ra2;
     word_t rd1, rd2;
@@ -56,6 +56,8 @@ module core
 	u1 jump;
 	u64 pcsrc;
 	u1 skip;
+
+	u1 ivalid;
 
 
 	pc_reg pc_reg
@@ -73,11 +75,12 @@ module core
 	fetch fetch
 	(
 		.dataF(dataF),
-		.raw_instr(raw_instr),
 		.pc(pc),
 		.ireq(ireq),
 		.iresp(iresp),
-		.stallI(stallI)
+		.stallI(stallI),
+		.stallM(stallM),
+		.stallI_nxt(stallI_nxt)
 	);
 
 	fetch_reg fetch_reg
@@ -88,7 +91,9 @@ module core
 		.dataF_nxt(dataF_nxt),
 		.stall(stall),
 		.jump(jump),
-		.stallM(stallM)
+		.stallM(stallM),
+		.stallI(stallI),
+		.stallI_nxt(stallI_nxt)
 	);
 
 	decode decode
