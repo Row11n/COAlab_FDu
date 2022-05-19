@@ -23,7 +23,8 @@ module decode
     input forward_data_t forwardW,
     output u1 stall,
     output u1 jump,
-    output u64 pcsrc
+    output u64 pcsrc,
+    output u1 is_ls
 );
     control_t ctl;
     decoder decoder
@@ -34,6 +35,7 @@ module decode
         .ra2(ra2)
     );
 
+    assign is_ls = ctl.memread | ctl.memwrite;
     assign dataD.ctl = ctl;
     assign dataD.dst = dataF.raw_instr[11:7];
 

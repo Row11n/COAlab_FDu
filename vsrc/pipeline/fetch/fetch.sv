@@ -18,18 +18,22 @@ import pipes::*;
     input ibus_resp_t iresp,
     output u1 stallI,
     input u1 stallM,
-    input u1 stallI_nxt
+    input u1 is_ls
 );
 
     assign stallI = ireq.valid && ~iresp.data_ok;
     assign dataF.pc = pc;
     assign ireq.addr = pc;
 
-    always_comb
-    begin
-        if(stallI_nxt == '0 && stallM == 1)
+    always_latch 
+    begin 
+        if(is_ls == 1'b1)
             ireq.valid = 1'b0;
-        else
+    end
+
+    always_latch 
+    begin 
+        if(stallM == 1'b1 || pc == '0)
             ireq.valid = 1'b1;
     end
 

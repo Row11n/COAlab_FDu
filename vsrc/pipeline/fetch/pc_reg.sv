@@ -19,7 +19,9 @@ module pc_reg
 	input u1 jump,
 	input u64 pcsrc,
 	input u1 stallM,
-	input u1 stallI
+	input u1 stallI,
+	input u1 stallE,
+	input ibus_req_t ireq
 );
 
     u64 pc_nxt;
@@ -31,7 +33,9 @@ module pc_reg
 		.stall(stall),
 		.jump(jump),
 		.stallM(stallM),
-		.stallI(stallI)
+		.stallI(stallI),
+		.stallE(stallE),
+		.valid(ireq.valid)
 	);
 
     always_ff @(posedge clk)

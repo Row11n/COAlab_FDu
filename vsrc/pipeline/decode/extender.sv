@@ -47,7 +47,8 @@ module extender
         end
 
         OR, SUB, AND, XOR, ADD, BEQ, SLLW, SRL, SLT, SUBW, SLTU,
-        ADDW, SRA, SLL, BNE, BLT, BGE, BLTU, BGEU, SRAW, SRLW:
+        ADDW, SRA, SLL, BNE, BLT, BGE, BLTU, BGEU, SRAW, SRLW, DIVU,
+        REMUW, MUL, MULW, DIV, DIVW, REMW, DIVUW, REM, REMU:
         begin
             if(ra2 != '0 && ra2 == forwardE.wa && forwardE.regwrite == 1'b1)
                 srcb = forwardE.result;

@@ -18,14 +18,16 @@ import pipes::*;
     input u1 stall,
     input u1 jump,
     input u1 stallM,
-    input u1 stallI
+    input u1 stallI,
+    input u1 stallE,
+    input u1 valid
 );
 
     always_comb
     begin
         if(jump)
             pc_selected = pcsrc;
-        else if(stall || stallM || stallI)
+        else if(stall || stallM || stallI || ~valid || stallE)
             pc_selected = pcplus4 - 4;
         else
             pc_selected = pcplus4;

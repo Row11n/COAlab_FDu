@@ -14,14 +14,15 @@ module decode_reg
     input clk, reset,
     input decode_data_t dataD,
     output decode_data_t dataD_nxt,
-    input u1 stallM
+    input u1 stallM,
+    input u1 stallE
 );
      always_ff @(posedge clk)
      begin
          if(reset)
          begin
          end
-         else if(stallM)
+         else if(stallM || stallE)
          begin
              dataD_nxt <= dataD_nxt;
          end

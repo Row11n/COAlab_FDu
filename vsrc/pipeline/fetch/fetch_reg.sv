@@ -18,7 +18,7 @@ module fetch_reg
     input u1 jump,
     input u1 stallM,
     input u1 stallI,
-    output u1 stallI_nxt
+    input u1 stallE
 );
 
     always_ff @(posedge clk)
@@ -28,7 +28,7 @@ module fetch_reg
          end
     else
     begin
-        if(stall || jump || stallM || stallI)
+        if(stall || jump || stallM || stallI || stallE)
         begin
             dataF_nxt.raw_instr <= '0;
             dataF_nxt.pc <= dataF.pc;
@@ -37,7 +37,6 @@ module fetch_reg
         begin
             dataF_nxt <= dataF;
         end
-        stallI_nxt <= stallI;
     end
     end
 

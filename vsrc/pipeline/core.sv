@@ -46,7 +46,8 @@ module core
 	u1 stall;
 	u1 stallM;
 	u1 stallI;
-	u1 stallI_nxt;
+	u1 stallE;
+	u1 is_ls;
 	u1 pc_valid;
 	creg_addr_t ra1, ra2;
     word_t rd1, rd2;
@@ -69,7 +70,9 @@ module core
 		.jump(jump),
 		.pcsrc(pcsrc),
 		.stallM(stallM),
-		.stallI(stallI)
+		.stallI(stallI),
+		.stallE(stallE),
+		.ireq(ireq)
 	);
 
 	fetch fetch
@@ -80,7 +83,7 @@ module core
 		.iresp(iresp),
 		.stallI(stallI),
 		.stallM(stallM),
-		.stallI_nxt(stallI_nxt)
+		.is_ls(is_ls)
 	);
 
 	fetch_reg fetch_reg
@@ -93,7 +96,7 @@ module core
 		.jump(jump),
 		.stallM(stallM),
 		.stallI(stallI),
-		.stallI_nxt(stallI_nxt)
+		.stallE(stallE)
 	);
 
 	decode decode
@@ -109,7 +112,8 @@ module core
 		.forwardW(forwardW),
 		.stall(stall),
 		.jump(jump),
-		.pcsrc(pcsrc)
+		.pcsrc(pcsrc),
+		.is_ls(is_ls)
 	);
 
 	decode_reg decode_reg
@@ -118,14 +122,18 @@ module core
 		.reset(reset),
 		.dataD(dataD),
 		.dataD_nxt(dataD_nxt),
-		.stallM(stallM)
+		.stallM(stallM),
+		.stallE(stallE)
 	);
 
 	execute execute
 	(
+		.clk(clk),
+		.reset(reset),
 		.dataD(dataD_nxt),
 		.dataE(dataE),
-		.forwardE(forwardE)
+		.forwardE(forwardE),
+		.stallE(stallE)
 	);
 
 	execute_reg execute_reg
@@ -134,7 +142,8 @@ module core
 		.reset(reset),
 		.dataE(dataE),
 		.dataE_nxt(dataE_nxt),
-		.stallM(stallM)
+		.stallM(stallM),
+		.stallE(stallE)
 	);
 
 	memory memory

@@ -49,10 +49,10 @@ module decoder
                     FL7_NOP:
                     begin
                         ctl.op = NOP;
-                        ctl.nop_signal = 1'b1;      
+                        ctl.nop_signal = 1'b1;  
+                        ctl.alufunc = ALU_FUCKING;    
                     end
                     endcase
-
                 end
             endcase
         end
@@ -198,7 +198,7 @@ module decoder
             ra1 = 5'b00000;
         end
 
-        F7_OR_SUB_AND_XOR_ADD_SRL_SLT_SLTU_SRA_SLL:
+        F7_OR_SUB_AND_XOR_ADD_SRL_SLT_SLTU_SRA_SLL_DIVU_MUL_DIV_REM_REMU:
         begin
             unique case(f3)
 
@@ -244,18 +244,41 @@ module decoder
                 endcase
             end
 
-            F3_OR:
+            F3_OR_REM:
             begin
-                ctl.op = OR;
-                ctl.memwrite = 1'b0;
-                ctl.memread = 1'b0;
-                ctl.regwrite = 1'b1;
-                ctl.alufunc = ALU_OR;
-                ra1 = raw_instr[19:15];
-                ra2 = raw_instr[24:20];
+                unique case(fl7)
+                default:
+                begin
+                    
+                end
+
+                FL7_OR:
+                begin
+                    ctl.op = OR;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_OR;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                FL7_REM:
+                begin
+                    ctl.op = REM;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_REM;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                endcase
+                
             end
 
-            F3_SUB_ADD:
+            F3_SUB_ADD_MUL:
             begin
                 unique case(fl7)
                 default:
@@ -269,6 +292,17 @@ module decoder
                     ctl.memread = 1'b0;
                     ctl.regwrite = 1'b1;
                     ctl.alufunc = ALU_SUB;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                FL7_MUL:
+                begin
+                    ctl.op = MUL;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_MUL;
                     ra1 = raw_instr[19:15];
                     ra2 = raw_instr[24:20];
                 end
@@ -288,29 +322,71 @@ module decoder
                 endcase
             end
 
-            F3_AND:
+            F3_AND_REMU:
             begin
-                ctl.op = AND;
-                ctl.memwrite = 1'b0;
-                ctl.memread = 1'b0;
-                ctl.regwrite = 1'b1;
-                ctl.alufunc = ALU_AND;
-                ra1 = raw_instr[19:15];
-                ra2 = raw_instr[24:20];
+                unique case(fl7)
+                default:
+                begin
+                end
+
+                FL7_AND:
+                begin
+                    ctl.op = AND;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_AND;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                FL7_REMU:
+                begin
+                    ctl.op = REMU;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_REMU;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                endcase
+                
             end
 
-            F3_XOR:
+            F3_XOR_DIV:
             begin
-                ctl.op = XOR;
-                ctl.regwrite = 1'b1;
-                ctl.memread = 1'b0;
-                ctl.memwrite = 1'b0;
-                ctl.alufunc = ALU_XOR;
-                ra1 = raw_instr[19:15];
-                ra2 = raw_instr[24:20];
+                unique case(fl7)
+                default:
+                begin
+                end
+
+                FL7_DIV:
+                begin
+                    ctl.op = DIV;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_DIV;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                FL7_XOR:
+                begin
+                    ctl.op = XOR;
+                    ctl.regwrite = 1'b1;
+                    ctl.memread = 1'b0;
+                    ctl.memwrite = 1'b0;
+                    ctl.alufunc = ALU_XOR;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+                endcase
             end
 
-            F3_SRL_SRA:
+            F3_SRL_SRA_DIVU:
             begin
                 unique case(fl7)
                 default:
@@ -335,6 +411,17 @@ module decoder
                     ctl.memread = 1'b0;
                     ctl.regwrite = 1'b1;
                     ctl.alufunc = ALU_SRA;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                FL7_DIVU:
+                begin
+                    ctl.op = DIVU;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_DIVU;
                     ra1 = raw_instr[19:15];
                     ra2 = raw_instr[24:20];
                 end
@@ -701,7 +788,7 @@ module decoder
             endcase
         end
 
-        F7_SLLW_SUBW_SRAW_SRLW_ADDW:
+        F7_SLLW_SUBW_SRAW_SRLW_ADDW_REMUW_MULW_DIVW_REMW_DIVUW:
         begin
             unique case(f3)
             
@@ -710,7 +797,7 @@ module decoder
                 
             end
 
-            F3_SRAW_SRLW:
+            F3_SRAW_SRLW_DIVUW:
             begin
                 unique case(fl7)
                 default:
@@ -740,6 +827,17 @@ module decoder
                     ra2 = raw_instr[24:20];
                 end
 
+                FL7_DIVUW:
+                begin
+                    ctl.op = DIVUW;
+                    ctl.regwrite = 1'b1;
+                    ctl.memread = 1'b0;
+                    ctl.memwrite = 1'b0;
+                    ctl.alufunc = ALU_DIVUW;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
                 endcase        
             end
             
@@ -764,7 +862,70 @@ module decoder
                 endcase  
             end
 
-            F3_SUBW_ADDW:
+            F3_REMW:
+            begin
+                unique case(fl7)
+                default:
+                begin
+                    
+                end
+
+                FL7_REMW:
+                begin
+                    ctl.op = REMW;
+                    ctl.regwrite = 1'b1;
+                    ctl.memread = 1'b0;
+                    ctl.memwrite = 1'b0;
+                    ctl.alufunc = ALU_REMW;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+                endcase  
+            end
+
+            F3_DIVW:
+            begin
+                unique case(fl7)
+                default:
+                begin
+                    
+                end
+
+                FL7_DIVW:
+                begin
+                    ctl.op = DIVW;
+                    ctl.regwrite = 1'b1;
+                    ctl.memread = 1'b0;
+                    ctl.memwrite = 1'b0;
+                    ctl.alufunc = ALU_DIVW;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+                endcase  
+            end
+
+            F3_REMUW:
+            begin
+                unique case(fl7)
+                default:
+                begin
+                    
+                end
+
+                FL7_REMUW:
+                begin
+                    ctl.op = REMUW;
+                    ctl.regwrite = 1'b1;
+                    ctl.memread = 1'b0;
+                    ctl.memwrite = 1'b0;
+                    ctl.alufunc = ALU_REMUW;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+                endcase  
+            end
+
+            F3_SUBW_ADDW_MULW:
             begin
                 unique case(fl7)
                 
@@ -791,6 +952,17 @@ module decoder
                     ctl.memread = 1'b0;
                     ctl.regwrite = 1'b1;
                     ctl.alufunc = ALU_ADDW;
+                    ra1 = raw_instr[19:15];
+                    ra2 = raw_instr[24:20];
+                end
+
+                FL7_MULW:
+                begin
+                    ctl.op = MULW;
+                    ctl.memwrite = 1'b0;
+                    ctl.memread = 1'b0;
+                    ctl.regwrite = 1'b1;
+                    ctl.alufunc = ALU_MULW;
                     ra1 = raw_instr[19:15];
                     ra2 = raw_instr[24:20];
                 end
