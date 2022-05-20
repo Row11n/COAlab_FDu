@@ -3,6 +3,7 @@
 
 `ifdef VERILATOR
 `include "include/common.sv"
+`include "ram/RAM_SinglePort.sv"
 /* You should not add any additional includes in this file */
 `endif
 
