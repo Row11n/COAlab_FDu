@@ -80,18 +80,28 @@ module memory
         endcase
     end
 
-    always_latch
+    always_comb
+    begin
+        if(dataE.ctl.memwrite == 1'b1)
+        begin
+            dataM.wd = dreq.data;
+        end
+        else
+        begin
+            dataM.wd = wd;
+        end
+    end
+
+    always_comb
     begin
         if(dataE.ctl.memwrite == 1'b1)
         begin
             dreq.valid = 1'b1;
-            dataM.wd = dreq.data;
             dreq.strobe = strobe;
         end
         else if(dataE.ctl.memread == 1'b1)
         begin
             dreq.valid = 1'b1;
-            dataM.wd = wd;
             dreq.strobe = '0;
         end
         else

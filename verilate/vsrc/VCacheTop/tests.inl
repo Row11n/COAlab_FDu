@@ -79,7 +79,7 @@ WITH SKIP{
 
 // if your cache does not support partial writes, you can simply skip
 // this test by marking it with SKIP.
-WITH /*SKIP*/{
+WITH/*SKIP*/{
 	// S iterates over 0b0000 to 0b1111.
 	std::vector<word_t> a;  // to store the correct value
 	a.resize(16);
@@ -101,7 +101,7 @@ WITH /*SKIP*/{
 
 // this is a more detailed example of DBus.
 // add DEBUG to see all memory operations.
-WITH /*TRACE*/ /*DEBUG*/{
+WITH{
 	{
 		dbus->store(0xc, MSIZE4, 0b1111, 0x12345678);
 		ASSERT(dbus->load(0xc, MSIZE4) == 0x12345678);
@@ -427,7 +427,7 @@ WITH{
 	}
 } AS("random step");
 
-WITH{
+WITH TRACE{
 	std::vector<uint8_t> ref;
 	ref.resize(MEMORY_SIZE);
 
@@ -438,12 +438,10 @@ WITH{
 		int size = 1 << randi(0, 3);
 		int op = randi(0, 1);
 		addr_t addr = randi(0ul, MEMORY_SIZE / size - 1) * size;
-
 		log_debug(
 			"random: %s @addr=0x%x, size=%d\n",
 			op ? "load" : "store", addr, size
 		);
-
 		if (op == 0) {
 			// store
 			switch (size) {
