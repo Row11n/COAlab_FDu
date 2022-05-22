@@ -24,7 +24,8 @@ module decode
     output u1 stall,
     output u1 jump,
     output u64 pcsrc,
-    output u1 is_ls
+    output u1 is_ls,
+    input u1 stallE
 );
     control_t ctl;
     decoder decoder
@@ -105,7 +106,7 @@ module decode
     always_comb
     begin
         jump = 1'b0;
-        if(ctl.branch)
+        if(ctl.branch && ~stallE)
         begin
             unique case(ctl.op)
             

@@ -81,6 +81,7 @@ module core
 		.pc(pc),
 		.ireq(ireq),
 		.iresp(iresp),
+		.dresp(dresp),
 		.stallI(stallI),
 		.stallM(stallM),
 		.is_ls(is_ls)
@@ -96,7 +97,8 @@ module core
 		.jump(jump),
 		.stallM(stallM),
 		.stallI(stallI),
-		.stallE(stallE)
+		.stallE(stallE),
+		.is_ls(is_ls)
 	);
 
 	decode decode
@@ -113,7 +115,8 @@ module core
 		.stall(stall),
 		.jump(jump),
 		.pcsrc(pcsrc),
-		.is_ls(is_ls)
+		.is_ls(is_ls),
+		.stallE(stallE)
 	);
 
 	decode_reg decode_reg

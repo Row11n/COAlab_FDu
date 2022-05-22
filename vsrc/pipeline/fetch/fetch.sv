@@ -16,6 +16,7 @@ import pipes::*;
     input u64 pc,
     output ibus_req_t ireq,
     input ibus_resp_t iresp,
+    input dbus_resp_t dresp,
     output u1 stallI,
     input u1 stallM,
     input u1 is_ls
@@ -25,6 +26,7 @@ import pipes::*;
     assign dataF.pc = pc;
     assign ireq.addr = pc;
 
+
     always_latch 
     begin 
         if(is_ls == 1'b1)
@@ -33,11 +35,11 @@ import pipes::*;
 
     always_latch 
     begin 
-        if(stallM == 1'b1 || pc == '0)
+        if(stallM == 1'b1 || pc == '0 || dresp.data_ok == 1'b1)
             ireq.valid = 1'b1;
     end
 
-    assign dataF.raw_instr = iresp.data; 
+    assign dataF.raw_instr = ireq.valid ? iresp.data : '0; 
 
 endmodule
 `endif

@@ -291,7 +291,7 @@ WITH{
 
 constexpr size_t CMP_SCAN_SIZE = 32 * 1024;  // 32 KiB
 
-WITH CMP_TO(ref)
+WITH TRACE CMP_TO(ref)
 {
 	for (size_t i = 0; i < CMP_SCAN_SIZE / 8; i++) {
 		dbus->stored(8 * i, randi<uint64_t>());
@@ -315,7 +315,7 @@ WITH CMP_TO(ref)
 	}
 } AS("cmp: byte");
 
-WITH CMP_TO(ref)
+WITH TRACE CMP_TO(ref)
 {
 	constexpr int T = 65536;
 	for (int i = 0; i < T; i++) {
@@ -340,7 +340,7 @@ WITH{
 	}
 } AS("memset");
 
-WITH{
+WITH {
 	auto p = DBusPipeline(top, dbus);
 
 	addr_t MID = MEMORY_SIZE / 2;
@@ -427,7 +427,7 @@ WITH{
 	}
 } AS("random step");
 
-WITH TRACE{
+WITH {
 	std::vector<uint8_t> ref;
 	ref.resize(MEMORY_SIZE);
 

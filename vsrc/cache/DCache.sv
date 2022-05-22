@@ -31,11 +31,9 @@ module DCache
 
 `ifndef REFERENCE_CACHE
 	/* TODO: Lab3 Cache */
-    assign dresp = '0;
-    assign creq = '0;
 
     // typedefs
-	typedef enum u3 
+	typedef enum u2 
     {
 		INIT,
         FETCH,
@@ -77,12 +75,16 @@ module DCache
     u1 dirty_flag;
     u1 line_saved;
     u1 line_saved_for_writeback;
+
+    u1 random;
+
     assign tag_test0 = get_tag_line0(ram_rmeta);
     assign tag_test1 = get_tag_line1(ram_rmeta);
     assign valid_test0 = get_valid_line0(ram_rmeta);
     assign valid_test1 = get_valid_line1(ram_rmeta);
     assign dirty_test0 = get_dirty_line0(ram_rmeta);
     assign dirty_test1 = get_dirty_line1(ram_rmeta);
+
 
     // wires
     assign start = get_offset(dreq.addr);
@@ -154,8 +156,9 @@ module DCache
         ram_data.wdata = '0;
         if(reset)
         begin
-            ram_data.wdata = '0;
+            ram_meta.wmeta = '0;
             ram_meta.en = 1;
+            ram_meta.strobe = 2'b11;
         end
         else
         begin
@@ -171,6 +174,7 @@ module DCache
                             if(get_valid_line0(ram_rmeta) == '0)
                             begin
                                 index_line = 0;
+                                dirty_flag = 1;
                                 hit = 0;
                             end
                             else
@@ -192,6 +196,7 @@ module DCache
                             if(get_valid_line1(ram_rmeta) == '0)
                             begin
                                 index_line = 1;
+                                dirty_flag = 1;
                                 hit = 0;
                             end 
                             else 
@@ -215,8 +220,8 @@ module DCache
                             else if(get_valid_line1(ram_rmeta) == '0)
                                 index_line = 1;
                             else
-                                index_line = 1;
-                            //todo:替换策略
+                                index_line = random;
+                            
                             if(hit == 0)
                             begin
                                 if(index_line == 0)
@@ -249,6 +254,7 @@ module DCache
                             begin
                                 hit = 0;
                                 index_line = 0;
+                                dirty_flag = 1;
                             end
                         end
                         else if(req_tag == get_tag_line1(ram_rmeta))
@@ -262,6 +268,7 @@ module DCache
                             begin
                                 hit = 0;
                                 index_line = 1;
+                                dirty_flag = 1;
                             end
                         end
                         else
@@ -269,6 +276,12 @@ module DCache
 
                         if(hit == 0)
                         begin
+                            if(get_valid_line0(ram_rmeta) == '0)
+                                index_line = 0;
+                            else if(get_valid_line1(ram_rmeta) == '0)
+                                index_line = 1;
+                            else
+                                index_line = random;
                             if(index_line == 0 && get_dirty_line0(ram_rmeta) == 1)
                                 dirty_flag = 1;
                             if(index_line == 1 && get_dirty_line1(ram_rmeta) == 1)
@@ -402,15 +415,15 @@ module DCache
 
     // DBus driver
     assign dresp.addr_ok = state == INIT;
-    assign dresp.data_ok = (state == INIT) && hit;
-    assign dresp.data    = ram_rdata;
+    assign dresp.data_ok = ((state == INIT) && hit) || (state == UNCACHED && cresp.last);
+    assign dresp.data    = (state == UNCACHED) ? cresp.data : ram_rdata;
 
     // CBus driver
-    assign creq.valid    = state == FETCH || state == WRITEBACK;
-    assign creq.is_write = state == WRITEBACK;
+    assign creq.valid    = state == FETCH || state == WRITEBACK || state == UNCACHED;
+    assign creq.is_write = (state == WRITEBACK) || (state == UNCACHED && (|dreq.strobe));
     assign creq.size     = (state == UNCACHED) ? dreq.size : MSIZE8;
     assign creq.strobe   = (state == UNCACHED) ? dreq.strobe : 8'b11111111;
-    assign creq.data     = ram_rdata;
+    assign creq.data     = (state == UNCACHED) ? dreq.data : ram_rdata;
     assign creq.len      = (state == UNCACHED) ? MLEN1 : MLEN16;
 	assign creq.burst	 = (state == UNCACHED) ? AXI_BURST_FIXED : AXI_BURST_INCR;
 
@@ -420,12 +433,16 @@ module DCache
         begin
             if(line_saved == 0)
             begin
-                creq.addr = {get_tag_line0(ram_rmeta), index, start, 3'b0};
+                creq.addr = {get_tag_line0(ram_rmeta), index, 7'b0};
             end
             else
             begin
-                creq.addr = {get_tag_line1(ram_rmeta), index, start, 3'b0};
+                creq.addr = {get_tag_line1(ram_rmeta), index, 7'b0};
             end
+        end
+        else if(state == FETCH)
+        begin
+            creq.addr = {dreq.addr[63:7], 4'b0, dreq.addr[2:0]};
         end
         else
             creq.addr = dreq.addr;
@@ -437,13 +454,15 @@ module DCache
     always_ff @(posedge clk)
     begin
         init_count <= '0;
+        random <= '0;
         if (~reset) 
         begin
+            random <= random + 1;
             unique case (state)
             INIT: 
             if (dreq.valid) 
             begin
-                offset <= start;
+                offset <= '0;
                 req <= dreq;
                 line_saved <= index_line;
                 line_saved_for_writeback <= index_line;
@@ -496,9 +515,6 @@ module DCache
             init_count <= init_count + 1;
         end
     end
-
-
-
 `else
 
     typedef enum u2 {
