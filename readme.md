@@ -18,7 +18,7 @@ Arch-2022Sping-FDU
 │　　├── include：头文件目录  
 │　　├── pipeline  
 │　　　　　├── regfile：寄存器文件目录，寄存器组模块已给出  
-│　　　　　├── execute：流水线执行阶段目录，alu模块已给出  
+│　　　　　├── execute：流水线执行阶段目录，alu模块已给出
 │　　　　　└── core.sv：五级流水线主体代码  
 │　　├── ram：内存控制相关目录  
 │　　├── util：访存接口相关目录  
@@ -30,3 +30,5 @@ Arch-2022Sping-FDU
 │── xpm_memory：Xilinx的内存IP  
 │── Makefile：仿真测试的命令汇总  
 │── readme.md: 此文件  
+
+
